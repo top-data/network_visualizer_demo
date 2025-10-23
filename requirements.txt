@@ -1,0 +1,12 @@
+streamlit
+folium
+networkx
+geopy
+pandas
+numpy
+earthengine-api
+google-cloud-storage
+rdflib
+plotly
+scikit-learn
+streamlit_folium
