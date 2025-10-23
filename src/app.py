@@ -1,7 +1,15 @@
 import streamlit as st
 import folium
 from streamlit_folium import folium_static
-from components.map_manager import MapManager
+import sys
+from pathlib import Path
+
+# Add the project root directory to Python path
+project_root = str(Path(__file__).parent.parent)
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
+from src.components.map_manager import MapManager
 from components.knowledge_graph import (
     PhysicalLayerGraph,
     RoutingLayerGraph,
