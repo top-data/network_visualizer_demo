@@ -21,7 +21,7 @@ from components.recovery_recommender import RecoveryRecommender
 
 def main():
     st.set_page_config(page_title="Network Visualizer", layout="wide")
-    st.title("Network Infrastructure Visualizer")
+    st.title("Network Resilience Visualizer")
 
     # Initialize components
     map_manager = MapManager()
@@ -40,7 +40,7 @@ def main():
     col1, col2 = st.columns([7, 3])
     
     with col1:
-        st.subheader("Network Infrastructure Map")
+        st.subheader("Network Resilience Map")
         m = map_manager.create_base_map()
         
         # Add selected layers
@@ -62,14 +62,26 @@ def main():
         st.subheader("System Status")
         failures = failure_analyzer.get_current_failures()
         if failures:
-            st.error("Detected Issues:")
-            for failure in failures:
-                st.write(f"- {failure['description']}")
+            high_severity = [f for f in failures if f['severity'] == 'high']
+            medium_severity = [f for f in failures if f['severity'] == 'medium']
+            
+            if high_severity:
+                st.error("Critical Issues:")
+                for failure in high_severity:
+                    st.write(f"- {failure['description']}")
+            
+            if medium_severity:
+                st.warning("Warnings:")
+                for failure in medium_severity:
+                    st.write(f"- {failure['description']}")
             
             st.subheader("Recovery Recommendations")
             recommendations = recovery_recommender.get_recommendations(failures)
-            for rec in recommendations:
-                st.info(rec)
+            if recommendations:
+                for rec in recommendations:
+                    st.info(rec)
+            else:
+                st.info("Analyzing recovery options...")
         else:
             st.success("All systems operational")
 
