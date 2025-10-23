@@ -31,10 +31,10 @@ def main():
     # Sidebar controls
     st.sidebar.title("Layer Controls")
     show_physical = st.sidebar.checkbox("Physical Layer", True)
-    show_routing = st.sidebar.checkbox("Routing Layer (BGP)")
-    show_addressing = st.sidebar.checkbox("Addressing Layer (DNS)")
-    show_timing = st.sidebar.checkbox("Time Sync Layer (NTP)")
-    show_heatmap = st.sidebar.checkbox("Show Affected Areas")
+    show_routing = st.sidebar.checkbox("Routing Layer (BGP)", True)
+    show_addressing = st.sidebar.checkbox("Addressing Layer (DNS)", True)
+    show_timing = st.sidebar.checkbox("Time Sync Layer (NTP)", True)
+    show_heatmap = st.sidebar.checkbox("Show Affected Areas", True)
 
     # Main map view
     col1, col2 = st.columns([7, 3])
