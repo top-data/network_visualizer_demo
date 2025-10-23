@@ -31,6 +31,9 @@ env/
 *.code-workspace
 .history/
 
+# Streamlit
+src/.streamlit/
+
 # IDE - PyCharm
 .idea/
 *.iml
