@@ -21,7 +21,7 @@ from components.recovery_recommender import RecoveryRecommender
 
 def main():
     st.set_page_config(page_title="Network Visualizer", layout="wide")
-    st.title("Network Infrastructure Visualizer - Sydney")
+    st.title("Network Infrastructure Visualizer")
 
     # Initialize components
     map_manager = MapManager()
