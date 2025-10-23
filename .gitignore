@@ -32,7 +32,7 @@ env/
 .history/
 
 # Streamlit
-src/.streamlit/
+src/.streamlit
 
 # IDE - PyCharm
 .idea/
