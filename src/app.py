@@ -10,14 +10,14 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 
 from src.components.map_manager import MapManager
-from components.knowledge_graph import (
+from src.components.knowledge_graph import (
     PhysicalLayerGraph,
     RoutingLayerGraph,
     AddressingLayerGraph,
     TimeSyncLayerGraph
 )
-from components.failure_analyzer import FailureAnalyzer
-from components.recovery_recommender import RecoveryRecommender
+from src.components.failure_analyzer import FailureAnalyzer
+from src.components.recovery_recommender import RecoveryRecommender
 
 def main():
     st.set_page_config(page_title="Network Visualizer", layout="wide")

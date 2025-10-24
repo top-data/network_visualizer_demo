@@ -3,25 +3,18 @@ from folium import plugins
 from typing import List, Dict
 import streamlit as st
 import ee
-import sys
-from pathlib import Path
-
-# Add the project root directory to Python path
-project_root = str(Path(__file__).parent.parent.parent)
-if project_root not in sys.path:
-    sys.path.append(project_root)
 
 from src.data.sample_data import (
     PHYSICAL_NODES, PHYSICAL_LINKS,
     BGP_NODES, BGP_PATHS,
     DNS_NODES, DNS_LINKS,
     NTP_NODES, NTP_LINKS,
-    AFFECTED_AREAS
+    AFFECTED_AREAS,
 )
 
 class MapManager:
     def __init__(self):
-        # extract earth engine credentials from streamlit secrets
+        # Extract Earth Engine credentials from Streamlit secrets
         service_account = st.secrets["service_account"]
         key_data = st.secrets["private_key"]
 
@@ -36,7 +29,7 @@ class MapManager:
             'failed': 'red',
             'degraded': 'yellow'
         }
-        
+
     def create_base_map(self) -> folium.Map:
         """Create the base map with satellite imagery."""
         m = folium.Map(
@@ -46,7 +39,7 @@ class MapManager:
             attr='Google Satellite'
         )
         return m
-    
+
     def _create_node_popup(self, node: Dict) -> str:
         """Create HTML popup content for a node."""
         return f"""
@@ -57,7 +50,7 @@ class MapManager:
                 ID: {node['id']}
             </div>
         """
-    
+
     def _create_link_popup(self, link: Dict) -> str:
         """Create HTML popup content for a link."""
         return f"""
@@ -68,13 +61,18 @@ class MapManager:
                 {f"Capacity: {link['capacity']}<br>" if 'capacity' in link else ''}
             </div>
         """
-    
-    def _add_nodes_and_links(self, m: folium.Map, nodes: List[Dict], 
-                            links: List[Dict], layer_name: str,
-                            node_icon: str = 'info-sign'):
+
+    def _add_nodes_and_links(
+        self,
+        m: folium.Map,
+        nodes: List[Dict],
+        links: List[Dict],
+        layer_name: str,
+        node_icon: str = 'info-sign',
+    ):
         """Add nodes and links to the map in a feature group."""
         fg = folium.FeatureGroup(name=layer_name)
-        
+
         # Add nodes
         for node in nodes:
             folium.Marker(
@@ -83,63 +81,44 @@ class MapManager:
                 icon=folium.Icon(
                     color=self.status_colors.get(node['status'], 'gray'),
                     icon=node_icon,
-                    prefix='fa'
-                )
+                    prefix='fa',
+                ),
             ).add_to(fg)
-        
+
         # Add links
         for link in links:
             source = next(n for n in nodes if n['id'] == link['source'])
             target = next(n for n in nodes if n['id'] == link['target'])
-            
             points = [[source['lat'], source['lon']], [target['lat'], target['lon']]]
             folium.PolyLine(
                 points,
                 weight=3,
                 color=self.status_colors.get(link['status'], 'gray'),
                 popup=folium.Popup(self._create_link_popup(link), max_width=300),
-                opacity=0.8
+                opacity=0.8,
             ).add_to(fg)
-        
+
         fg.add_to(m)
-    
+
     def add_physical_layer(self, m: folium.Map):
-        """Add physical infrastructure layer to the map."""
-        self._add_nodes_and_links(
-            m, PHYSICAL_NODES, PHYSICAL_LINKS,
-            'Physical Infrastructure',
-            'server'
-        )
-    
+        """Add physical infrastructure layer."""
+        self._add_nodes_and_links(m, PHYSICAL_NODES, PHYSICAL_LINKS, 'Physical Infrastructure', 'server')
+
     def add_routing_layer(self, m: folium.Map):
-        """Add BGP routing layer to the map."""
-        self._add_nodes_and_links(
-            m, BGP_NODES, BGP_PATHS,
-            'BGP Routing',
-            'random'
-        )
-    
+        """Add BGP routing layer."""
+        self._add_nodes_and_links(m, BGP_NODES, BGP_PATHS, 'BGP Routing', 'random')
+
     def add_addressing_layer(self, m: folium.Map):
-        """Add DNS infrastructure layer to the map."""
-        self._add_nodes_and_links(
-            m, DNS_NODES, DNS_LINKS,
-            'DNS Infrastructure',
-            'database'
-        )
-    
+        """Add DNS infrastructure layer."""
+        self._add_nodes_and_links(m, DNS_NODES, DNS_LINKS, 'DNS Infrastructure', 'database')
+
     def add_timing_layer(self, m: folium.Map):
-        """Add NTP infrastructure layer to the map."""
-        self._add_nodes_and_links(
-            m, NTP_NODES, NTP_LINKS,
-            'NTP Timing',
-            'clock-o'
-        )
-    
+        """Add NTP timing layer."""
+        self._add_nodes_and_links(m, NTP_NODES, NTP_LINKS, 'NTP Timing', 'clock-o')
+
     def add_heatmap_layer(self, m: folium.Map):
-        """Add heatmap of affected areas to the map."""
-        data = [[point['lat'], point['lon'], point['intensity']] 
-                for point in AFFECTED_AREAS]
-        
+        """Add heatmap of affected areas."""
+        data = [[p['lat'], p['lon'], p['intensity']] for p in AFFECTED_AREAS]
         plugins.HeatMap(
             data,
             name='Affected Areas',
@@ -147,9 +126,8 @@ class MapManager:
             max_zoom=18,
             radius=50,
             blur=30,
-            gradient={0.4: 'blue', 0.65: 'yellow', 1: 'red'}
+            gradient={0.4: 'blue', 0.65: 'yellow', 1: 'red'},
         ).add_to(m)
-        
-        # Add layer control if not already added
+
         if not any(isinstance(ctrl, folium.LayerControl) for ctrl in m._children.values()):
             folium.LayerControl().add_to(m)
