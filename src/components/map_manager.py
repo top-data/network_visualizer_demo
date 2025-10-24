@@ -4,7 +4,7 @@ from typing import List, Dict
 import streamlit as st
 import ee
 
-from src.data.sample_data import (
+from data.sample_data import (
     PHYSICAL_NODES, PHYSICAL_LINKS,
     BGP_NODES, BGP_PATHS,
     DNS_NODES, DNS_LINKS,
